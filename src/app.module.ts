@@ -9,6 +9,10 @@ import { CompaniesModule } from './companies/companies.module';
 import { TemplatesModule } from './templates/templates.module';
 import { ClausesModule } from './clauses/clauses.module';
 import { DocumentsModule } from './documents/documents.module';
+import { PaymentsModule } from './payments/payments.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { AiModule } from './ai/ai.module';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -23,6 +27,10 @@ import { DocumentsModule } from './documents/documents.module';
     TemplatesModule,
     ClausesModule,
     DocumentsModule,
+    PaymentsModule,
+    UploadsModule,
+    AiModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

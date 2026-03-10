@@ -214,6 +214,23 @@ export class DocumentsService {
     });
   }
 
+  async getDownloadHtml(documentId: string, userId: string) {
+    await this.verifyOwnership(documentId, userId);
+
+    const latestVersion = await this.prisma.documentVersion.findFirst({
+      where: { document_id: documentId },
+      orderBy: { version_number: 'desc' },
+    });
+
+    if (!latestVersion || !latestVersion.content_html) {
+      throw new BadRequestException(
+        'Document has no generated HTML. Please generate the document first.',
+      );
+    }
+
+    return latestVersion.content_html;
+  }
+
   async addClause(documentId: string, clauseId: string, userId: string) {
     await this.verifyOwnership(documentId, userId);
 

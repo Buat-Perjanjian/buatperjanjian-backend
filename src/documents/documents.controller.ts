@@ -6,9 +6,12 @@ import {
   Param,
   Body,
   Query,
+  Res,
   UseGuards,
   ParseUUIDPipe,
+  HttpStatus,
 } from '@nestjs/common';
+import * as express from 'express';
 import { DocumentsService } from './documents.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -93,5 +96,31 @@ export class DocumentsController {
     @Body() dto: AddClauseDto,
   ) {
     return this.documentsService.addClause(id, dto.clause_id, user.sub);
+  }
+
+  @Get(':id/download')
+  async download(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Res() res: express.Response,
+  ) {
+    const html = await this.documentsService.getDownloadHtml(id, user.sub);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="document-${id}.html"`,
+    );
+    res.send(html);
+  }
+
+  @Get(':id/download-docx')
+  downloadDocx(
+    @Param('id', ParseUUIDPipe) _id: string,
+    @Res() res: express.Response,
+  ) {
+    res.status(HttpStatus.NOT_IMPLEMENTED).json({
+      statusCode: 501,
+      message: 'DOCX download is not yet implemented',
+    });
   }
 }

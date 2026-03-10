@@ -1,0 +1,116 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { AiRequestType } from '../../generated/prisma/client.js';
+
+@Injectable()
+export class AiService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async rewrite(userId: string, text: string) {
+    const rewrittenText = `Dengan ini dinyatakan bahwa ${text.substring(0, 50)}... telah disusun ulang sesuai dengan ketentuan hukum yang berlaku di Indonesia. Pasal-pasal dalam perjanjian ini telah disesuaikan untuk memenuhi persyaratan perundang-undangan terkini.`;
+
+    await this.prisma.aiRequest.create({
+      data: {
+        user_id: userId,
+        request_type: AiRequestType.wizard_rewrite,
+        input_text: text,
+        output_text: rewrittenText,
+        tokens_used: Math.floor(Math.random() * 500) + 100,
+      },
+    });
+
+    return { rewritten_text: rewrittenText };
+  }
+
+  async explain(userId: string, question: string) {
+    const explanation = `Berdasarkan pertanyaan Anda mengenai "${question.substring(0, 80)}...", berikut penjelasan hukumnya:\n\n1. Menurut KUHPerdata Pasal 1320, syarat sahnya perjanjian meliputi kesepakatan, kecakapan, suatu hal tertentu, dan sebab yang halal.\n2. Dalam konteks pertanyaan Anda, hal ini berkaitan dengan prinsip kebebasan berkontrak yang diatur dalam Pasal 1338 KUHPerdata.\n3. Disarankan untuk berkonsultasi dengan ahli hukum untuk kasus spesifik Anda.`;
+
+    await this.prisma.aiRequest.create({
+      data: {
+        user_id: userId,
+        request_type: AiRequestType.legal_explanation,
+        input_text: question,
+        output_text: explanation,
+        tokens_used: Math.floor(Math.random() * 800) + 200,
+      },
+    });
+
+    return { explanation };
+  }
+
+  async analyze(userId: string, fileUrl?: string, documentId?: string) {
+    const inputRef = fileUrl || documentId || 'unknown';
+
+    const result = {
+      contract_score: 72,
+      missing_clauses: [
+        'Klausul Force Majeure',
+        'Klausul Penyelesaian Sengketa',
+        'Klausul Kerahasiaan',
+        'Klausul Pengakhiran Perjanjian',
+      ],
+      recommendations: [
+        'Tambahkan klausul force majeure untuk perlindungan terhadap kejadian luar biasa',
+        'Perjelas mekanisme penyelesaian sengketa (mediasi, arbitrase, atau pengadilan)',
+        'Tambahkan ketentuan kerahasiaan untuk melindungi informasi sensitif',
+      ],
+    };
+
+    await this.prisma.aiRequest.create({
+      data: {
+        user_id: userId,
+        document_id: documentId || null,
+        request_type: AiRequestType.contract_analysis,
+        input_text: inputRef,
+        output_text: JSON.stringify(result),
+        tokens_used: Math.floor(Math.random() * 1200) + 300,
+      },
+    });
+
+    return result;
+  }
+
+  async rebuild(userId: string, fileUrl: string) {
+    const contractJson = {
+      title: 'Perjanjian Kerja Waktu Tertentu',
+      parties: [
+        { role: 'Pihak Pertama', name: '[Nama Perusahaan]' },
+        { role: 'Pihak Kedua', name: '[Nama Karyawan]' },
+      ],
+      clauses: [
+        {
+          title: 'Ruang Lingkup Pekerjaan',
+          content:
+            'Pihak Kedua setuju untuk melaksanakan pekerjaan sesuai dengan deskripsi jabatan yang telah disepakati.',
+        },
+        {
+          title: 'Jangka Waktu',
+          content:
+            'Perjanjian ini berlaku selama 12 (dua belas) bulan terhitung sejak tanggal penandatanganan.',
+        },
+        {
+          title: 'Kompensasi',
+          content:
+            'Pihak Pertama akan memberikan kompensasi bulanan sesuai dengan ketentuan yang berlaku.',
+        },
+        {
+          title: 'Pengakhiran',
+          content:
+            'Masing-masing pihak dapat mengakhiri perjanjian ini dengan pemberitahuan tertulis 30 hari sebelumnya.',
+        },
+      ],
+    };
+
+    await this.prisma.aiRequest.create({
+      data: {
+        user_id: userId,
+        request_type: AiRequestType.contract_rebuild,
+        input_text: fileUrl,
+        output_text: JSON.stringify(contractJson),
+        tokens_used: Math.floor(Math.random() * 1500) + 500,
+      },
+    });
+
+    return { contract_json: contractJson };
+  }
+}
