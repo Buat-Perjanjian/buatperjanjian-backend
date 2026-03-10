@@ -7,7 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { SaveDraftDto } from './dto/save-draft.dto';
-import { ContractType, DocumentStatus } from '../../generated/prisma/client.js';
+import { ContractType, DocumentStatus } from '@prisma/client';
 import * as Handlebars from 'handlebars';
 
 @Injectable()

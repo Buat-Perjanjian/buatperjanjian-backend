@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ClausesService } from './clauses.service';
-import { ContractType } from '../../generated/prisma/client.js';
+import { ContractType } from '@prisma/client';
 
 @ApiTags('Clauses')
 @Controller('clauses')

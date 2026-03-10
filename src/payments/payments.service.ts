@@ -4,7 +4,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ContractType, PaymentStatus } from '../../generated/prisma/client.js';
+import { ContractType, PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class PaymentsService {

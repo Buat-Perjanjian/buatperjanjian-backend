@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AiRequestType } from '../../generated/prisma/client.js';
+import { AiRequestType } from '@prisma/client';
 
 @Injectable()
 export class AiService {

@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { ContractType } from '../../../generated/prisma/client.js';
+import { ContractType } from '@prisma/client';
 
 export class CreateDocumentDto {
   @IsUUID()

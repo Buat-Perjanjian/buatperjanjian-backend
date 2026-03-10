@@ -19,7 +19,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { SaveDraftDto } from './dto/save-draft.dto';
 import { AddClauseDto } from './dto/add-clause.dto';
-import { ContractType, DocumentStatus } from '../../generated/prisma/client.js';
+import { ContractType, DocumentStatus } from '@prisma/client';
 
 @ApiTags('Documents')
 @UseGuards(JwtAuthGuard)
