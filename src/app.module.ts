@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { CompaniesModule } from './companies/companies.module';
 import { TemplatesModule } from './templates/templates.module';
 import { ClausesModule } from './clauses/clauses.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ClausesModule } from './clauses/clauses.module';
     CompaniesModule,
     TemplatesModule,
     ClausesModule,
+    DocumentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

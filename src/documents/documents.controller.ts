@@ -1,0 +1,97 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Param,
+  Body,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
+import { DocumentsService } from './documents.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { CreateDocumentDto } from './dto/create-document.dto';
+import { SaveDraftDto } from './dto/save-draft.dto';
+import { AddClauseDto } from './dto/add-clause.dto';
+import { ContractType, DocumentStatus } from '../../generated/prisma/client.js';
+
+@UseGuards(JwtAuthGuard)
+@Controller('documents')
+export class DocumentsController {
+  constructor(private readonly documentsService: DocumentsService) {}
+
+  @Post()
+  create(@CurrentUser() user: any, @Body() dto: CreateDocumentDto) {
+    return this.documentsService.create(user.sub, dto);
+  }
+
+  @Post(':id/draft')
+  saveDraft(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SaveDraftDto,
+  ) {
+    return this.documentsService.saveDraft(id, user.sub, dto);
+  }
+
+  @Post(':id/generate')
+  generate(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.documentsService.generate(id, user.sub);
+  }
+
+  @Get()
+  findAll(
+    @CurrentUser() user: any,
+    @Query('status') status?: DocumentStatus,
+    @Query('contract_type') contractType?: ContractType,
+  ) {
+    return this.documentsService.findAll(user.sub, status, contractType);
+  }
+
+  @Get(':id')
+  findOne(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.documentsService.findOne(id, user.sub);
+  }
+
+  @Delete(':id')
+  remove(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.documentsService.remove(id, user.sub);
+  }
+
+  @Get(':id/versions')
+  listVersions(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.documentsService.listVersions(id, user.sub);
+  }
+
+  @Post(':id/versions/:versionId/restore')
+  restoreVersion(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionId', ParseUUIDPipe) versionId: string,
+  ) {
+    return this.documentsService.restoreVersion(id, versionId, user.sub);
+  }
+
+  @Post(':id/clauses')
+  addClause(
+    @CurrentUser() user: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AddClauseDto,
+  ) {
+    return this.documentsService.addClause(id, dto.clause_id, user.sub);
+  }
+}
