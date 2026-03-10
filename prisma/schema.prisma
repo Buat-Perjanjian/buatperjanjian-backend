@@ -93,7 +93,7 @@ model Document {
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
 
-  company  Company  @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  company  Company           @relation(fields: [company_id], references: [id], onDelete: Cascade)
   template DocumentTemplate? @relation(fields: [template_id], references: [id], onDelete: SetNull)
 
   versions DocumentVersion[]
@@ -130,12 +130,12 @@ model DocumentClause {
 }
 
 model DocumentTemplate {
-  id              String       @id @default(uuid()) @db.Uuid
-  name            String       @db.VarChar(255)
+  id              String        @id @default(uuid()) @db.Uuid
+  name            String        @db.VarChar(255)
   contract_type   ContractType?
-  template_html   String?      @db.Text
+  template_html   String?       @db.Text
   template_schema Json?
-  created_at      DateTime     @default(now())
+  created_at      DateTime      @default(now())
 
   documents Document[]
 
@@ -143,10 +143,10 @@ model DocumentTemplate {
 }
 
 model ClausesLibrary {
-  id            String       @id @default(uuid()) @db.Uuid
-  title         String       @db.VarChar(255)
-  description   String?      @db.Text
-  clause_text   String?      @db.Text
+  id            String        @id @default(uuid()) @db.Uuid
+  title         String        @db.VarChar(255)
+  description   String?       @db.Text
+  clause_text   String?       @db.Text
   contract_type ContractType?
 
   @@map("clauses_library")
