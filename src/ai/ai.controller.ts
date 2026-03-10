@@ -1,4 +1,5 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -7,6 +8,7 @@ import { ExplainDto } from './dto/explain.dto';
 import { AnalyzeDto } from './dto/analyze.dto';
 import { RebuildDto } from './dto/rebuild.dto';
 
+@ApiTags('AI')
 @UseGuards(JwtAuthGuard)
 @Controller('ai')
 export class AiController {

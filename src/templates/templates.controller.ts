@@ -1,7 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { TemplatesService } from './templates.service';
 import { ContractType } from '../../generated/prisma/client.js';
 
+@ApiTags('Templates')
 @Controller('templates')
 export class TemplatesController {
   constructor(private readonly templatesService: TemplatesService) {}

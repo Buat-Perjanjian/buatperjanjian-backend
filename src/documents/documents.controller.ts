@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   HttpStatus,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
 import { DocumentsService } from './documents.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,6 +21,7 @@ import { SaveDraftDto } from './dto/save-draft.dto';
 import { AddClauseDto } from './dto/add-clause.dto';
 import { ContractType, DocumentStatus } from '../../generated/prisma/client.js';
 
+@ApiTags('Documents')
 @UseGuards(JwtAuthGuard)
 @Controller('documents')
 export class DocumentsController {
