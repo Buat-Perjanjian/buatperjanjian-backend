@@ -17,38 +17,29 @@ enum UserRole {
 
 enum DocumentStatus {
   draft
-  review
-  approved
+  generated
+  paid
   signed
-  expired
-  cancelled
 }
 
 enum ContractType {
-  nda
-  employment
-  service
-  partnership
-  sale
-  lease
-  loan
-  custom
+  PKWT
+  PKWTT
+  Freelance
+  NDA
 }
 
 enum PaymentStatus {
   pending
   paid
   failed
-  refunded
-  expired
 }
 
 enum AiRequestType {
-  generate
-  review
-  summarize
-  translate
-  clause_suggest
+  wizard_rewrite
+  legal_explanation
+  contract_analysis
+  contract_rebuild
 }
 
 enum FileType {
