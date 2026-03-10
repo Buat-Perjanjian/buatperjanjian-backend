@@ -13,6 +13,8 @@ import { PaymentsModule } from './payments/payments.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { AiModule } from './ai/ai.module';
 import { ActivityModule } from './activity/activity.module';
+import { AdminModule } from './admin/admin.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { ActivityModule } from './activity/activity.module';
     UploadsModule,
     AiModule,
     ActivityModule,
+    AdminModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
