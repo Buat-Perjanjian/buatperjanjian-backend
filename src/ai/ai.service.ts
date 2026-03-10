@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiRequestType } from '@prisma/client';
 
@@ -39,6 +39,17 @@ export class AiService {
   }
 
   async analyze(userId: string, fileUrl?: string, documentId?: string) {
+    // Verify document ownership if documentId is provided
+    if (documentId) {
+      const document = await this.prisma.document.findUnique({
+        where: { id: documentId },
+        include: { company: true },
+      });
+      if (!document || document.company.user_id !== userId) {
+        throw new ForbiddenException('You do not have access to this document');
+      }
+    }
+
     const inputRef = fileUrl || documentId || 'unknown';
 
     const result = {

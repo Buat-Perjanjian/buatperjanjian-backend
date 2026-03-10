@@ -14,6 +14,47 @@ import * as Handlebars from 'handlebars';
 export class DocumentsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Maps wizard form field names to Handlebars template variables.
+   * The wizard uses generic field names, but each template type
+   * expects specific variable names.
+   */
+  private transformWizardData(
+    wizardData: Record<string, any>,
+  ): Record<string, any> {
+    const d = { ...wizardData };
+
+    // Combine tempat_lahir + tanggal_lahir → ttl_karyawan
+    if (!d.ttl_karyawan && (d.tempat_lahir || d.tanggal_lahir)) {
+      d.ttl_karyawan = [d.tempat_lahir, d.tanggal_lahir]
+        .filter(Boolean)
+        .join(', ');
+    }
+
+    // Rename mismatched fields (keep originals too for safety)
+    d.gaji_pokok = d.gaji_pokok || d.gaji;
+    d.durasi_kontrak = d.durasi_kontrak || d.masa_kontrak;
+    d.tempat = d.tempat || d.lokasi_kerja;
+    d.tanggal = d.tanggal || d.tanggal_mulai;
+
+    // Freelance template mappings
+    d.nama_pemberi_kerja = d.nama_pemberi_kerja || d.nama_perwakilan;
+    d.alamat_pemberi_kerja = d.alamat_pemberi_kerja || d.alamat_perusahaan;
+    d.nama_freelancer = d.nama_freelancer || d.nama_karyawan;
+    d.alamat_freelancer = d.alamat_freelancer || d.alamat_karyawan;
+    d.nilai_kontrak = d.nilai_kontrak || d.gaji;
+
+    // NDA template mappings
+    d.nama_pihak_pertama = d.nama_pihak_pertama || d.nama_perwakilan;
+    d.perusahaan_pihak_pertama =
+      d.perusahaan_pihak_pertama || d.nama_perusahaan;
+    d.alamat_pihak_pertama = d.alamat_pihak_pertama || d.alamat_perusahaan;
+    d.nama_pihak_kedua = d.nama_pihak_kedua || d.nama_karyawan;
+    d.alamat_pihak_kedua = d.alamat_pihak_kedua || d.alamat_karyawan;
+
+    return d;
+  }
+
   private async verifyOwnership(documentId: string, userId: string) {
     const document = await this.prisma.document.findUnique({
       where: { id: documentId },
@@ -105,8 +146,9 @@ export class DocumentsService {
       throw new NotFoundException('No version found');
     }
 
-    const wizardData =
+    const rawData =
       (latestVersion.content_json as Record<string, any>) || {};
+    const wizardData = this.transformWizardData(rawData);
     const compiled = Handlebars.compile(template.template_html);
     const html = compiled(wizardData);
 

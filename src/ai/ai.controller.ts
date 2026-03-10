@@ -16,21 +16,21 @@ export class AiController {
 
   @Post('rewrite')
   rewrite(@CurrentUser() user: any, @Body() dto: RewriteDto) {
-    return this.aiService.rewrite(user.sub, dto.text);
+    return this.aiService.rewrite(user.id, dto.text);
   }
 
   @Post('explain')
   explain(@CurrentUser() user: any, @Body() dto: ExplainDto) {
-    return this.aiService.explain(user.sub, dto.question);
+    return this.aiService.explain(user.id, dto.question);
   }
 
   @Post('analyze')
   analyze(@CurrentUser() user: any, @Body() dto: AnalyzeDto) {
-    return this.aiService.analyze(user.sub, dto.file_url, dto.document_id);
+    return this.aiService.analyze(user.id, dto.file_url, dto.document_id);
   }
 
   @Post('rebuild')
   rebuild(@CurrentUser() user: any, @Body() dto: RebuildDto) {
-    return this.aiService.rebuild(user.sub, dto.file_url);
+    return this.aiService.rebuild(user.id, dto.file_url);
   }
 }

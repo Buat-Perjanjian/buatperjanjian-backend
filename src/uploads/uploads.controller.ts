@@ -41,6 +41,6 @@ export class UploadsController {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    return this.uploadsService.uploadFile(user.sub, file);
+    return this.uploadsService.uploadFile(user.id, file);
   }
 }

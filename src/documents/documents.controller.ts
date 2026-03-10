@@ -29,7 +29,7 @@ export class DocumentsController {
 
   @Post()
   create(@CurrentUser() user: any, @Body() dto: CreateDocumentDto) {
-    return this.documentsService.create(user.sub, dto);
+    return this.documentsService.create(user.id, dto);
   }
 
   @Post(':id/draft')
@@ -38,7 +38,7 @@ export class DocumentsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: SaveDraftDto,
   ) {
-    return this.documentsService.saveDraft(id, user.sub, dto);
+    return this.documentsService.saveDraft(id, user.id, dto);
   }
 
   @Post(':id/generate')
@@ -46,7 +46,7 @@ export class DocumentsController {
     @CurrentUser() user: any,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.documentsService.generate(id, user.sub);
+    return this.documentsService.generate(id, user.id);
   }
 
   @Get()
@@ -55,7 +55,7 @@ export class DocumentsController {
     @Query('status') status?: DocumentStatus,
     @Query('contract_type') contractType?: ContractType,
   ) {
-    return this.documentsService.findAll(user.sub, status, contractType);
+    return this.documentsService.findAll(user.id, status, contractType);
   }
 
   @Get(':id')
@@ -63,7 +63,7 @@ export class DocumentsController {
     @CurrentUser() user: any,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.documentsService.findOne(id, user.sub);
+    return this.documentsService.findOne(id, user.id);
   }
 
   @Delete(':id')
@@ -71,7 +71,7 @@ export class DocumentsController {
     @CurrentUser() user: any,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.documentsService.remove(id, user.sub);
+    return this.documentsService.remove(id, user.id);
   }
 
   @Get(':id/versions')
@@ -79,7 +79,7 @@ export class DocumentsController {
     @CurrentUser() user: any,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.documentsService.listVersions(id, user.sub);
+    return this.documentsService.listVersions(id, user.id);
   }
 
   @Post(':id/versions/:versionId/restore')
@@ -88,7 +88,7 @@ export class DocumentsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Param('versionId', ParseUUIDPipe) versionId: string,
   ) {
-    return this.documentsService.restoreVersion(id, versionId, user.sub);
+    return this.documentsService.restoreVersion(id, versionId, user.id);
   }
 
   @Post(':id/clauses')
@@ -97,7 +97,7 @@ export class DocumentsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AddClauseDto,
   ) {
-    return this.documentsService.addClause(id, dto.clause_id, user.sub);
+    return this.documentsService.addClause(id, dto.clause_id, user.id);
   }
 
   @Get(':id/download')
@@ -106,7 +106,7 @@ export class DocumentsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Res() res: express.Response,
   ) {
-    const html = await this.documentsService.getDownloadHtml(id, user.sub);
+    const html = await this.documentsService.getDownloadHtml(id, user.id);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader(
       'Content-Disposition',

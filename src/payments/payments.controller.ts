@@ -13,7 +13,7 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@CurrentUser() user: any, @Body() dto: CreatePaymentDto) {
-    return this.paymentsService.createPayment(user.sub, dto.document_id);
+    return this.paymentsService.createPayment(user.id, dto.document_id);
   }
 
   @Post('webhook')

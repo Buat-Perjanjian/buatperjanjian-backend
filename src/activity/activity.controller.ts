@@ -17,7 +17,7 @@ export class ActivityController {
     @Query('limit') limit?: string,
   ) {
     return this.activityService.findAll(
-      user.sub,
+      user.id,
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 20,
     );
