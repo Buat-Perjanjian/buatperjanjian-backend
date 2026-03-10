@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Enums ──────────────────────────────────────────────
+
+enum UserRole {
+  user
+  admin
+  superadmin
+}
+
+enum DocumentStatus {
+  draft
+  review
+  approved
+  signed
+  expired
+  cancelled
+}
+
+enum ContractType {
+  nda
+  employment
+  service
+  partnership
+  sale
+  lease
+  loan
+  custom
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+  expired
+}
+
+enum AiRequestType {
+  generate
+  review
+  summarize
+  translate
+  clause_suggest
+}
+
+enum FileType {
+  pdf
+  docx
+  image
+  other
+}
+
+// ── Models ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique @db.VarChar(255)
+  password_hash String?  @db.Text
+  full_name     String?  @db.VarChar(255)
+  role          UserRole @default(user)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  companies      Company[]
+  payments       Payment[]
+  ai_requests    AiRequest[]
+  uploaded_files UploadedFile[]
+  activity_logs  ActivityLog[]
+
+  @@map("users")
+}
+
+model Company {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  name       String   @db.VarChar(255)
+  address    String?  @db.Text
+  phone      String?  @db.VarChar(50)
+  created_at DateTime @default(now())
+
+  user      User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@map("companies")
+}
+
+model Document {
+  id            String         @id @default(uuid()) @db.Uuid
+  company_id    String         @db.Uuid
+  template_id   String?        @db.Uuid
+  title         String         @db.VarChar(255)
+  status        DocumentStatus @default(draft)
+  contract_type ContractType?
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  company  Company  @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  template DocumentTemplate? @relation(fields: [template_id], references: [id], onDelete: SetNull)
+
+  versions DocumentVersion[]
+  clauses  DocumentClause[]
+  payments Payment[]
+
+  @@index([company_id], map: "idx_documents_company")
+  @@map("documents")
+}
+
+model DocumentVersion {
+  id             String   @id @default(uuid()) @db.Uuid
+  document_id    String   @db.Uuid
+  version_number Int
+  content_html   String?  @db.Text
+  content_json   Json?
+  created_at     DateTime @default(now())
+
+  document Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+
+  @@map("document_versions")
+}
+
+model DocumentClause {
+  id             String  @id @default(uuid()) @db.Uuid
+  document_id    String  @db.Uuid
+  clause_title   String  @db.VarChar(255)
+  clause_content String? @db.Text
+  order_index    Int
+
+  document Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+
+  @@map("document_clauses")
+}
+
+model DocumentTemplate {
+  id              String       @id @default(uuid()) @db.Uuid
+  name            String       @db.VarChar(255)
+  contract_type   ContractType?
+  template_html   String?      @db.Text
+  template_schema Json?
+  created_at      DateTime     @default(now())
+
+  documents Document[]
+
+  @@map("document_templates")
+}
+
+model ClausesLibrary {
+  id            String       @id @default(uuid()) @db.Uuid
+  title         String       @db.VarChar(255)
+  description   String?      @db.Text
+  clause_text   String?      @db.Text
+  contract_type ContractType?
+
+  @@map("clauses_library")
+}
+
+model Payment {
+  id               String        @id @default(uuid()) @db.Uuid
+  user_id          String        @db.Uuid
+  document_id      String        @db.Uuid
+  amount           Int
+  status           PaymentStatus @default(pending)
+  payment_provider String?       @db.VarChar(50)
+  created_at       DateTime      @default(now())
+
+  user     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  document Document     @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  logs     PaymentLog[]
+
+  @@index([user_id], map: "idx_payments_user")
+  @@map("payments")
+}
+
+model PaymentLog {
+  id                String   @id @default(uuid()) @db.Uuid
+  payment_id        String   @db.Uuid
+  provider_response Json?
+  created_at        DateTime @default(now())
+
+  payment Payment @relation(fields: [payment_id], references: [id], onDelete: Cascade)
+
+  @@map("payment_logs")
+}
+
+model AiRequest {
+  id           String        @id @default(uuid()) @db.Uuid
+  user_id      String        @db.Uuid
+  document_id  String?       @db.Uuid
+  request_type AiRequestType
+  input_text   String?       @db.Text
+  output_text  String?       @db.Text
+  tokens_used  Int?
+  created_at   DateTime      @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id], map: "idx_ai_requests_user")
+  @@map("ai_requests")
+}
+
+model UploadedFile {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  file_url   String   @db.Text
+  file_type  FileType @default(other)
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("uploaded_files")
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  action     String   @db.VarChar(255)
+  metadata   Json?
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+model AnalyticsEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String?  @db.Uuid
+  event_name String   @db.VarChar(255)
+  event_data Json?
+  created_at DateTime @default(now())
+
+  @@map("analytics_events")
+}
