@@ -57,7 +57,13 @@ export class AuthService {
     return { user_id: user.id, token };
   }
 
-  getProfile(user: { id: string; email: string; full_name: string | null; role: string; created_at: Date }) {
+  getProfile(user: {
+    id: string;
+    email: string;
+    full_name: string | null;
+    role: string;
+    created_at: Date;
+  }) {
     return {
       id: user.id,
       email: user.email,

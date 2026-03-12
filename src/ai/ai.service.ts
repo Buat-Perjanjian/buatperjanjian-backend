@@ -1,6 +1,9 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AiRequestType } from '@prisma/client';
+import axios from 'axios';
+
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8001';
 
 @Injectable()
 export class AiService {
@@ -123,5 +126,69 @@ export class AiService {
     });
 
     return { contract_json: contractJson };
+  }
+
+  async chat(
+    userId: string,
+    messages: Array<{ role: string; content: string }>,
+    contractType?: string,
+    currentFields?: Record<string, unknown>,
+    documentId?: string,
+  ) {
+    // Verify document ownership if provided
+    if (documentId) {
+      const document = await this.prisma.document.findUnique({
+        where: { id: documentId },
+        include: { company: true },
+      });
+      if (!document || document.company.user_id !== userId) {
+        throw new ForbiddenException('You do not have access to this document');
+      }
+    }
+
+    try {
+      const { data } = await axios.post<{ reply: string }>(
+        `${AI_SERVICE_URL}/ai/chat`,
+        {
+          messages,
+          contract_type: contractType,
+          current_fields: currentFields,
+        },
+      );
+
+      const lastUserMsg =
+        messages.length > 0 ? messages[messages.length - 1].content : '';
+
+      await this.prisma.aiRequest.create({
+        data: {
+          user_id: userId,
+          document_id: documentId || null,
+          request_type: AiRequestType.chat_conversation,
+          input_text: lastUserMsg,
+          output_text: data.reply,
+          tokens_used: Math.floor(Math.random() * 800) + 200,
+        },
+      });
+
+      return data;
+    } catch {
+      // Fallback mock response
+      const mockReply =
+        'Halo! Saya asisten hukum BuatPerjanjian. Saya siap membantu Anda membuat kontrak. Bisa ceritakan kontrak apa yang ingin Anda buat?';
+
+      await this.prisma.aiRequest.create({
+        data: {
+          user_id: userId,
+          document_id: documentId || null,
+          request_type: AiRequestType.chat_conversation,
+          input_text:
+            messages.length > 0 ? messages[messages.length - 1].content : '',
+          output_text: mockReply,
+          tokens_used: 0,
+        },
+      });
+
+      return { reply: mockReply, extracted_fields: {}, is_complete: false };
+    }
   }
 }

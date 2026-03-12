@@ -39,6 +39,7 @@ enum AiRequestType {
   legal_explanation
   contract_analysis
   contract_rebuild
+  chat_conversation
 }
 
 enum FileType {

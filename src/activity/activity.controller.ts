@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ActivityService } from './activity.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtUser } from '../auth/interfaces/jwt-user.interface';
 
 @ApiTags('Activity')
 @UseGuards(JwtAuthGuard)
@@ -12,7 +13,7 @@ export class ActivityController {
 
   @Get()
   findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {

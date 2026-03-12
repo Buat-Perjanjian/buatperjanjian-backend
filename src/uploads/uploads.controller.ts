@@ -14,6 +14,7 @@ import { randomUUID } from 'crypto';
 import { UploadsService } from './uploads.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtUser } from '../auth/interfaces/jwt-user.interface';
 
 @ApiTags('Uploads')
 @UseGuards(JwtAuthGuard)
@@ -35,7 +36,7 @@ export class UploadsController {
     }),
   )
   upload(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {

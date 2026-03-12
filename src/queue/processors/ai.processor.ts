@@ -6,8 +6,10 @@ import { Job } from 'bullmq';
 export class AiProcessor extends WorkerHost {
   private readonly logger = new Logger(AiProcessor.name);
 
-  async process(job: Job): Promise<void> {
-    this.logger.log(`Processing AI job ${job.id} with data: ${JSON.stringify(job.data)}`);
+  process(job: Job): void {
+    this.logger.log(
+      `Processing AI job ${job.id} with data: ${JSON.stringify(job.data)}`,
+    );
     // Mock processing
     this.logger.log(`AI job ${job.id} completed`);
   }

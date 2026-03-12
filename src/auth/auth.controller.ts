@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
+import { JwtUser } from './interfaces/jwt-user.interface';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,7 +24,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  me(@CurrentUser() user: any) {
+  me(@CurrentUser() user: JwtUser) {
     return this.authService.getProfile(user);
   }
 }

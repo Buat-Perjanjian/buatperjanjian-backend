@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtUser } from '../auth/interfaces/jwt-user.interface';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 
 @ApiTags('Payments')
@@ -12,7 +13,7 @@ export class PaymentsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@CurrentUser() user: any, @Body() dto: CreatePaymentDto) {
+  create(@CurrentUser() user: JwtUser, @Body() dto: CreatePaymentDto) {
     return this.paymentsService.createPayment(user.id, dto.document_id);
   }
 

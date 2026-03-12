@@ -6,8 +6,10 @@ import { Job } from 'bullmq';
 export class EmailProcessor extends WorkerHost {
   private readonly logger = new Logger(EmailProcessor.name);
 
-  async process(job: Job): Promise<void> {
-    this.logger.log(`Processing email job ${job.id} with data: ${JSON.stringify(job.data)}`);
+  process(job: Job): void {
+    this.logger.log(
+      `Processing email job ${job.id} with data: ${JSON.stringify(job.data)}`,
+    );
     // Mock processing
     this.logger.log(`Email job ${job.id} completed`);
   }

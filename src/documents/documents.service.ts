@@ -20,9 +20,9 @@ export class DocumentsService {
    * expects specific variable names.
    */
   private transformWizardData(
-    wizardData: Record<string, any>,
-  ): Record<string, any> {
-    const d = { ...wizardData };
+    wizardData: Record<string, string>,
+  ): Record<string, string> {
+    const d: Record<string, string> = { ...wizardData };
 
     // Combine tempat_lahir + tanggal_lahir → ttl_karyawan
     if (!d.ttl_karyawan && (d.tempat_lahir || d.tanggal_lahir)) {
@@ -87,7 +87,8 @@ export class DocumentsService {
     });
 
     const title =
-      dto.title || `${dto.contract_type} - ${new Date().toISOString().slice(0, 10)}`;
+      dto.title ||
+      `${dto.contract_type} - ${new Date().toISOString().slice(0, 10)}`;
 
     return this.prisma.document.create({
       data: {
@@ -147,12 +148,12 @@ export class DocumentsService {
     }
 
     const rawData =
-      (latestVersion.content_json as Record<string, any>) || {};
+      (latestVersion.content_json as Record<string, string>) || {};
     const wizardData = this.transformWizardData(rawData);
     const compiled = Handlebars.compile(template.template_html);
     const html = compiled(wizardData);
 
-    const newVersion = await this.prisma.documentVersion.create({
+    await this.prisma.documentVersion.create({
       data: {
         document_id: documentId,
         version_number: latestVersion.version_number + 1,
@@ -227,11 +228,7 @@ export class DocumentsService {
     });
   }
 
-  async restoreVersion(
-    documentId: string,
-    versionId: string,
-    userId: string,
-  ) {
+  async restoreVersion(documentId: string, versionId: string, userId: string) {
     await this.verifyOwnership(documentId, userId);
 
     const version = await this.prisma.documentVersion.findUnique({

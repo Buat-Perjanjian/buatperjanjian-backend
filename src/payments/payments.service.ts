@@ -85,7 +85,10 @@ export class PaymentsService {
     await this.prisma.paymentLog.create({
       data: {
         payment_id: payment.id,
-        provider_response: body as any,
+        provider_response: body as {
+          order_id: string;
+          transaction_status: string;
+        },
       },
     });
 

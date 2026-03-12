@@ -16,6 +16,7 @@ import * as express from 'express';
 import { DocumentsService } from './documents.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtUser } from '../auth/interfaces/jwt-user.interface';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { SaveDraftDto } from './dto/save-draft.dto';
 import { AddClauseDto } from './dto/add-clause.dto';
@@ -28,13 +29,13 @@ export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
   @Post()
-  create(@CurrentUser() user: any, @Body() dto: CreateDocumentDto) {
+  create(@CurrentUser() user: JwtUser, @Body() dto: CreateDocumentDto) {
     return this.documentsService.create(user.id, dto);
   }
 
   @Post(':id/draft')
   saveDraft(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: SaveDraftDto,
   ) {
@@ -43,7 +44,7 @@ export class DocumentsController {
 
   @Post(':id/generate')
   generate(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.documentsService.generate(id, user.id);
@@ -51,7 +52,7 @@ export class DocumentsController {
 
   @Get()
   findAll(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Query('status') status?: DocumentStatus,
     @Query('contract_type') contractType?: ContractType,
   ) {
@@ -60,23 +61,20 @@ export class DocumentsController {
 
   @Get(':id')
   findOne(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.documentsService.findOne(id, user.id);
   }
 
   @Delete(':id')
-  remove(
-    @CurrentUser() user: any,
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  remove(@CurrentUser() user: JwtUser, @Param('id', ParseUUIDPipe) id: string) {
     return this.documentsService.remove(id, user.id);
   }
 
   @Get(':id/versions')
   listVersions(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.documentsService.listVersions(id, user.id);
@@ -84,7 +82,7 @@ export class DocumentsController {
 
   @Post(':id/versions/:versionId/restore')
   restoreVersion(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Param('versionId', ParseUUIDPipe) versionId: string,
   ) {
@@ -93,7 +91,7 @@ export class DocumentsController {
 
   @Post(':id/clauses')
   addClause(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: AddClauseDto,
   ) {
@@ -102,7 +100,7 @@ export class DocumentsController {
 
   @Get(':id/download')
   async download(
-    @CurrentUser() user: any,
+    @CurrentUser() user: JwtUser,
     @Param('id', ParseUUIDPipe) id: string,
     @Res() res: express.Response,
   ) {

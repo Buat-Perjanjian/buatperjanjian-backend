@@ -49,7 +49,9 @@ export class AdminService {
   }
 
   async updateTemplate(id: string, dto: UpdateTemplateDto) {
-    const existing = await this.prisma.documentTemplate.findUnique({ where: { id } });
+    const existing = await this.prisma.documentTemplate.findUnique({
+      where: { id },
+    });
     if (!existing) {
       throw new NotFoundException('Template not found');
     }
@@ -66,7 +68,9 @@ export class AdminService {
   }
 
   async deleteTemplate(id: string) {
-    const existing = await this.prisma.documentTemplate.findUnique({ where: { id } });
+    const existing = await this.prisma.documentTemplate.findUnique({
+      where: { id },
+    });
     if (!existing) {
       throw new NotFoundException('Template not found');
     }
