@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { JwtUser } from '../auth/interfaces/jwt-user.interface';
+import type { JwtUser } from '../auth/interfaces/jwt-user.interface';
 
 @ApiTags('Users')
 @Controller('users')

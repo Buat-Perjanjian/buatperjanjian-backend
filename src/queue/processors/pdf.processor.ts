@@ -6,7 +6,8 @@ import { Job } from 'bullmq';
 export class PdfProcessor extends WorkerHost {
   private readonly logger = new Logger(PdfProcessor.name);
 
-  process(job: Job): void {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async process(job: Job): Promise<void> {
     this.logger.log(
       `Processing PDF job ${job.id} with data: ${JSON.stringify(job.data)}`,
     );

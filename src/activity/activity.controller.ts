@@ -3,7 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ActivityService } from './activity.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { JwtUser } from '../auth/interfaces/jwt-user.interface';
+import type { JwtUser } from '../auth/interfaces/jwt-user.interface';
 
 @ApiTags('Activity')
 @UseGuards(JwtAuthGuard)

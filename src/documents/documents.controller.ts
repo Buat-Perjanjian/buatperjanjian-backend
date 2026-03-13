@@ -16,7 +16,7 @@ import * as express from 'express';
 import { DocumentsService } from './documents.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { JwtUser } from '../auth/interfaces/jwt-user.interface';
+import type { JwtUser } from '../auth/interfaces/jwt-user.interface';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { SaveDraftDto } from './dto/save-draft.dto';
 import { AddClauseDto } from './dto/add-clause.dto';
