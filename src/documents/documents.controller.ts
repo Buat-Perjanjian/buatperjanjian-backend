@@ -9,7 +9,6 @@ import {
   Res,
   UseGuards,
   ParseUUIDPipe,
-  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import * as express from 'express';
@@ -113,14 +112,23 @@ export class DocumentsController {
     res.send(html);
   }
 
-  @Get(':id/download-docx')
-  downloadDocx(
-    @Param('id', ParseUUIDPipe) _id: string,
+  @Get(':id/download-pdf')
+  async downloadPdf(
+    @CurrentUser() user: JwtUser,
+    @Param('id', ParseUUIDPipe) id: string,
     @Res() res: express.Response,
   ) {
-    res.status(HttpStatus.NOT_IMPLEMENTED).json({
-      statusCode: 501,
-      message: 'DOCX download is not yet implemented',
-    });
+    const { buffer, title } = await this.documentsService.getDownloadPdf(
+      id,
+      user.id,
+    );
+    const safeTitle =
+      title.replace(/[^a-zA-Z0-9\-_ ]/g, '').trim() || 'dokumen';
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${safeTitle}.pdf"`,
+    );
+    res.send(buffer);
   }
 }

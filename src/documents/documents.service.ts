@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PdfService } from './pdf.service';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { SaveDraftDto } from './dto/save-draft.dto';
 import { ContractType, DocumentStatus } from '@prisma/client';
@@ -12,7 +13,10 @@ import * as Handlebars from 'handlebars';
 
 @Injectable()
 export class DocumentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly pdfService: PdfService,
+  ) {}
 
   /**
    * Maps wizard form field names to Handlebars template variables.
@@ -268,6 +272,16 @@ export class DocumentsService {
     }
 
     return latestVersion.content_html;
+  }
+
+  async getDownloadPdf(
+    documentId: string,
+    userId: string,
+  ): Promise<{ buffer: Buffer; title: string }> {
+    const document = await this.verifyOwnership(documentId, userId);
+    const html = await this.getDownloadHtml(documentId, userId);
+    const buffer = await this.pdfService.generatePdf(html);
+    return { buffer, title: document.title };
   }
 
   async addClause(documentId: string, clauseId: string, userId: string) {
