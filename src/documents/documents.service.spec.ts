@@ -2,6 +2,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentsService } from './documents.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { PdfService } from './pdf.service';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
 
 describe('DocumentsService', () => {
@@ -34,6 +35,7 @@ describe('DocumentsService', () => {
       providers: [
         DocumentsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: PdfService, useValue: { generatePdf: jest.fn() } },
       ],
     }).compile();
 
