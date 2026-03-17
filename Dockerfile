@@ -5,7 +5,7 @@ RUN npm ci
 COPY . .
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate
-RUN npm run build
+RUN npm run build && ls -la dist/
 
 FROM node:20-alpine
 WORKDIR /app
